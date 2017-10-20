@@ -392,6 +392,10 @@ public class UserResource {
 
         // Update user data
         Helper.updateUserHelper(authUser, userDAO, tokenDAO);
+
+        // Checks if the user has the tokens for their current tools
+        checkToolTokens(authUser, userId);
+
         List<Tool> tools = dockerRepoResource.refreshToolsForUser(userId, organization);
 
         userDAO.clearCache();
@@ -484,9 +488,8 @@ public class UserResource {
         userDAO.clearCache();
         // Refresh the user
         authUser = userDAO.findById(authUser.getId());
-        List<Workflow> finalWorkflows = getWorkflows(authUser);
         bulkUpsertWorkflows(authUser);
-        return finalWorkflows;
+        return getWorkflows(authUser);
     }
 
     @GET
@@ -506,9 +509,8 @@ public class UserResource {
         workflowResource.refreshStubWorkflowsForUser(authUser, null);
         // Refresh the user
         authUser = userDAO.findById(authUser.getId());
-        List<Workflow> finalWorkflows = getWorkflows(authUser);
         bulkUpsertWorkflows(authUser);
-        return finalWorkflows;
+        return getWorkflows(authUser);
     }
 
     @GET
